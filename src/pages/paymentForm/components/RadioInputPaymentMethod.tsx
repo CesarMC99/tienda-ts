@@ -1,7 +1,7 @@
 import { UseFormRegister } from 'react-hook-form'
-import { CheckoutFormValues } from '../../../schema/FormPaySchema'
 import { BsBank2 } from 'react-icons/bs'
 import { FaCreditCard } from 'react-icons/fa'
+import { CheckoutFormValues } from '../../../types'
 
 interface RadioInputPaymentMethodProps {
     paymentMethod: 'card' | 'bank'

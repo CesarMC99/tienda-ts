@@ -1,6 +1,6 @@
 import { UseFormRegister } from 'react-hook-form'
-import { CheckoutFormValues } from '../../../schema/FormPaySchema'
 import { FaDhl, FaFedex } from 'react-icons/fa'
+import { CheckoutFormValues } from '../../../types'
 
 interface RadioInputDeliveryProps {
     delivery: 'free' | 'express'

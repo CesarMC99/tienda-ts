@@ -1,6 +1,6 @@
 import { Path, UseFormRegister } from 'react-hook-form'
-import { CheckoutFormValues } from '../../../schema/FormPaySchema'
 import { ChangeEventHandler, HTMLInputTypeAttribute } from 'react'
+import { CheckoutFormValues } from '../../../types'
 
 interface InputCheckoutProps {
     register: UseFormRegister<CheckoutFormValues>
