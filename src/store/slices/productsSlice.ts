@@ -4,6 +4,7 @@ import { getProducts } from '../../services'
 
 export type ProductsType = {
     products: Product[]
+    isLoadingProducts: boolean
     currentPage: number
     fetchProducts: () => Promise<void>
     nextPage: () => void
@@ -12,11 +13,14 @@ export type ProductsType = {
 
 export const createProductsSlice: StateCreator<ProductsType> = (set) => ({
     products: [],
+    isLoadingProducts: true,
     currentPage: 1,
     fetchProducts: async () => {
+        set({ isLoadingProducts: true })
         const products = await getProducts()
         set({
             products,
+            isLoadingProducts: false,
         })
     },
     nextPage: () => {

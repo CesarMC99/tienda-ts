@@ -8,24 +8,33 @@ import { Separation } from '../../../components/Separation'
 
 import { StarRating } from './StarRating'
 import { ReviewComment } from './ReviewComment'
+import { Spiner } from '../../../components/Spiner'
 
 export const InfoProduct = () => {
     const { product } = useParams()
-    const { selectedProduct, fetchProduct, addToCart } = useAppStore()
+    const { selectedProduct, fetchProduct, addToCart, isLoadingProductInfo } =
+        useAppStore()
     const [currentImage, setCurrentImage] = useState(0)
 
+    //HACEMOS FETCH AL PRODUCTO SELECCIONADO
     useEffect(() => {
-        if (product) fetchProduct(product)
-    }, [product])
+        console.log('cambie')
+        if (product) {
+            fetchProduct(product)
+        }
+    }, [product, fetchProduct])
 
+    //OBTENEMOS ALGUNOS DATOS NECESARIOS PARA CONDICIONALES
     const images = selectedProduct?.images || []
     const reviews = selectedProduct?.reviews || []
     const hasImages = images.length > 0
 
+    //OBTENEMOS LA SIGUIENTE IMAGEN
     const nextImage = () => {
         if (hasImages) setCurrentImage((prev) => (prev + 1) % images.length)
     }
 
+    //OBTENEMOS LA ANTERIOR IMAGEN
     const prevImage = () => {
         if (hasImages)
             setCurrentImage(
@@ -33,13 +42,18 @@ export const InfoProduct = () => {
             )
     }
 
-    if (!selectedProduct || Object.keys(selectedProduct).length === 0) {
+    if (isLoadingProductInfo) {
+        return <Spiner />
+    }
+
+    //SI NO HAY PRODUCTO SELECCIONADO DEVOLVEMOS UN NOT FOUND
+    if (!selectedProduct) {
         return <p>NO EXISTE</p>
     }
 
     return (
         <section className='flex gap-20'>
-            {/* Contenedor de imágenes */}
+            {/* CONTENEDOR DE IMAGENES */}
             <div className='relative w-[700px] h-fit overflow-hidden aspect-square'>
                 <AnimatePresence mode='wait'>
                     {hasImages ? (
@@ -58,7 +72,7 @@ export const InfoProduct = () => {
                     )}
                 </AnimatePresence>
 
-                {/* Botones de navegación de imágenes */}
+                {/* BOTONES DE NEXT Y BEFORE DE LAS FOTOS */}
                 {images.length > 1 && (
                     <>
                         <button
@@ -79,7 +93,7 @@ export const InfoProduct = () => {
                 )}
             </div>
 
-            {/* Información del producto */}
+            {/* INFORMACION DEL PRODUCTO */}
             <div className='flex flex-col gap-4 w-[400px]'>
                 <h3 className='uppercase text-4xl font-black'>
                     {selectedProduct.title}
@@ -108,13 +122,13 @@ export const InfoProduct = () => {
                 />
                 <Separation />
 
-                {/* Sección de comentarios */}
+                {/* COMENTARIOS DE LOS PRODUCTOS */}
                 <p>Algunos comentarios:</p>
                 <div className='grid grid-cols-1 gap-3'>
                     {reviews.length > 0 ? (
                         reviews.map((review) => (
                             <ReviewComment
-                                key={review.comment}
+                                key={review.reviewerEmail}
                                 review={review}
                             />
                         ))

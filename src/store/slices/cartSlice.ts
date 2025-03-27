@@ -2,19 +2,19 @@ import { StateCreator } from 'zustand'
 import { CartProduct, Product } from '../../types'
 
 export type CartType = {
-    cartOfProducts: CartProduct[] //carrito
+    cartOfProducts: CartProduct[]
     productsTotalPrice: number
-    addToCart: (product: Product) => void // carrito
-    productExists: (id: Product['id']) => boolean // carrito
-    addQuantity: (id: CartProduct['id']) => void // carrito
-    decreaseQuantity: (id: CartProduct['id']) => void // carrito
-    deleteProductFromCart: (id: CartProduct['id']) => void // carrito
+    addToCart: (product: Product) => void
+    productExists: (id: Product['id']) => boolean
+    addQuantity: (id: CartProduct['id']) => void
+    decreaseQuantity: (id: CartProduct['id']) => void
+    deleteProductFromCart: (id: CartProduct['id']) => void
     totalPriceAllProducts: (delivery: 'express' | 'free') => void
+    clearCart: () => void
 }
 
 export const createCartSlice: StateCreator<CartType> = (set, get) => ({
     cartOfProducts: [],
-    // PROBANDO
     productsTotalPrice: 0,
 
     addToCart: (product) => {
@@ -80,7 +80,6 @@ export const createCartSlice: StateCreator<CartType> = (set, get) => ({
             ),
         }))
     },
-    // PROBANDO
     totalPriceAllProducts: (delivery) => {
         set((state) => {
             const baseTotal = state.cartOfProducts.reduce(
@@ -91,5 +90,8 @@ export const createCartSlice: StateCreator<CartType> = (set, get) => ({
             const deliveryCost = delivery === 'express' ? 4.99 : 0 // Costo del envío express
             return { productsTotalPrice: baseTotal + deliveryCost }
         })
+    },
+    clearCart: () => {
+        set({ cartOfProducts: [] })
     },
 })

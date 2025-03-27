@@ -15,6 +15,7 @@ export const StarRating = ({
     const stars = []
 
     for (let i = 0; i < maxStars; i++) {
+        // ESTRELLA COMPLETA
         if (rating >= i + 1) {
             stars.push(
                 <IoMdStar
@@ -22,6 +23,7 @@ export const StarRating = ({
                     className={`text-yellow-500 text-${size}xl`}
                 />
             )
+            // MEDIA ESTRELLA
         } else if (rating >= i + 0.5) {
             stars.push(
                 <IoMdStarHalf
@@ -29,6 +31,7 @@ export const StarRating = ({
                     className={`text-yellow-500 text-${size}xl`}
                 />
             )
+            // ESTRELLA VACIA
         } else {
             stars.push(
                 <IoMdStarOutline

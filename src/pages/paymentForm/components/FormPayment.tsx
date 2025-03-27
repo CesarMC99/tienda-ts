@@ -2,37 +2,37 @@ import { ProductCard } from './ProductCard'
 import { InfoPayment } from './InfoPayments'
 import { useAppStore } from '../../../store'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import {
-    CheckoutFormValues,
-    checkoutSchema,
-} from '../../../schema/FormPaySchema'
+import { checkoutSchema } from '../../../schema/FormPaySchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { InputCheckout } from './InputCheckout'
 import { RadioInputDelivery } from './RadioInputDelivery'
 import { RadioInputPaymentMethod } from './RadioInputPaymentMethod'
 import { useEffect } from 'react'
+import { CheckoutFormValues } from '../../../types'
 
 export const FormPayment = () => {
-    const { totalPriceAllProducts } = useAppStore()
+    const { totalPriceAllProducts, cartOfProducts, clearCart } = useAppStore()
     const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        watch,
+        register, //REGISTRAR INPUTS
+        handleSubmit, //ENVIAR EL FORMULARIO
+        formState: { errors }, //ERRORES DE LAS VALIDACIONES
+        watch, // VER CAMBIOS EN LOS INPUTS
         unregister,
-        reset,
+        reset, // RESETEAR FORMULARIO
     } = useForm<CheckoutFormValues>({
         defaultValues: {
+            //VALORES POR DEFECTO
             delivery: 'express',
             paymentMethod: 'card',
         },
         resolver: zodResolver(checkoutSchema),
     })
-    const { cartOfProducts } = useAppStore()
 
+    //MONITOREAMOS LOS CAMBIOS HECHOS
     const delivery = watch('delivery')
     const methodPayment = watch('paymentMethod')
 
+    //CADA CAMBION EN DE LAS OPCIONES QUITA EL REGISTRO DE LA OPCION NO SELECCIONADA
     useEffect(() => {
         if (methodPayment === 'card') {
             unregister('bank')
@@ -41,7 +41,9 @@ export const FormPayment = () => {
         }
     }, [methodPayment, unregister])
 
+    // VERIFICA QUE LOS DATOS CUMPLA CON EL ESQUEMA
     const onSubmit: SubmitHandler<CheckoutFormValues> = (data) => {
+        // LIMPIAMOS LOS DATOS ANTES DE ENVIAR
         if (data.paymentMethod === 'card') {
             data.bank = undefined
         }
@@ -50,21 +52,24 @@ export const FormPayment = () => {
             data.card = undefined
         }
 
+        //VERIFICAMOS LOS DATOS CON ZOD
         const result = checkoutSchema.safeParse(data)
 
         if (!result.success) {
+            console.log(data, 'ACA')
             console.log('Errores de validacion', result.error.format())
             return
         }
 
         alert('Pago realizado correctamente')
         console.log(data)
-
+        clearCart()
         reset()
     }
 
+    // BUSCAMOS EL PRECIO TOTAL A PAGAR
     useEffect(() => {
-        totalPriceAllProducts(delivery) // Llamar la función con el método de entrega
+        totalPriceAllProducts(delivery)
     }, [delivery, totalPriceAllProducts])
 
     return (
@@ -72,9 +77,11 @@ export const FormPayment = () => {
             className='flex flex-col gap-15 md:flex-row'
             onSubmit={handleSubmit(onSubmit)}
         >
+            {/* SECCION DE LOS PRODUCTOS Y ENTREGA */}
             <section className='flex flex-col gap-3 flex-1'>
                 <h2 className='font-semibold'>Información de Producto</h2>
 
+                {/* ITERAMOS LOS PRODUCTOS POR COMPRAR */}
                 <ul>
                     {cartOfProducts.map((product) => (
                         <ProductCard
@@ -86,6 +93,7 @@ export const FormPayment = () => {
 
                 <h2 className='font-semibold'>Información de Entrega</h2>
 
+                {/* ELEGIMOS EL TIPO DE DELIBERY EXPRESS O FREE */}
                 <div className='flex flex-col gap-4'>
                     <RadioInputDelivery
                         register={register}
@@ -101,9 +109,11 @@ export const FormPayment = () => {
                 </div>
             </section>
 
+            {/* SECCION DE DETALLES DE PAGO */}
             <section className='flex flex-col gap-4 flex-1 bg-white rounded-xl'>
                 <h2 className='font-semibold text-center'>Detalles de Pago</h2>
 
+                {/* INPUT DE EMAIL */}
                 <div className='flex flex-col gap-2'>
                     <InputCheckout
                         register={register}
@@ -115,6 +125,7 @@ export const FormPayment = () => {
                     />
                 </div>
 
+                {/* ELEGIR EL METODO DE PAGO CARD O BANK */}
                 <div className='flex flex-col gap-2'>
                     <span className='font-medium text-sm'>
                         Seleccione método de pago:
@@ -136,7 +147,9 @@ export const FormPayment = () => {
 
                 {/* FORMULARIO DE TARJETA */}
                 {methodPayment === 'card' ? (
+                    // SI ELEGIMOS CARD
                     <div className='flex flex-col gap-2'>
+                        {/* NOMBRE DE LA TARJETA */}
                         <label className='flex flex-col gap-1'>
                             <InputCheckout
                                 label='Nombre de la tarjeta'
@@ -147,6 +160,7 @@ export const FormPayment = () => {
                             />
                         </label>
 
+                        {/* NUMERO DE LA TARJETA */}
                         <label className='flex flex-col gap-1'>
                             <InputCheckout
                                 label='Numero de la tarjeta'
@@ -166,6 +180,7 @@ export const FormPayment = () => {
                             />
                         </label>
 
+                        {/* FECHA DE EXPIRACION */}
                         <div className='flex gap-2'>
                             <label className='flex flex-col gap-1 flex-1'>
                                 <InputCheckout
@@ -176,10 +191,12 @@ export const FormPayment = () => {
                                     error={errors.card?.expiration?.message}
                                     placeholder='MM/YY'
                                     onChangeOverride={(e) => {
+                                        //ELIMINA CUALQUIER CARACTER QUE NO SEA NUMERO
                                         const value = e.target.value.replace(
                                             /\D/g,
                                             ''
                                         )
+                                        //AGRUPA LOS NUMERO CON UN "/" DE POR MEDIO Y QUE NO TENGA MAS DE 5 CARACTERES
                                         e.target.value = (
                                             value.match(/.{1,2}/g)?.join('/') ??
                                             ''
@@ -188,6 +205,7 @@ export const FormPayment = () => {
                                 />
                             </label>
 
+                            {/* INGRESO DEL CVC DE LA TARJETA */}
                             <label className='flex flex-col gap-1 flex-1'>
                                 <InputCheckout
                                     label='CVC'
@@ -207,7 +225,9 @@ export const FormPayment = () => {
                         </div>
                     </div>
                 ) : (
+                    // SI ELEGIMOS BANCO
                     <div className='flex flex-col gap-2'>
+                        {/* NOMBRE DEL PROPIETARIO */}
                         <label className='flex flex-col gap-1'>
                             <InputCheckout
                                 label='Nombre de Propietario'
@@ -218,6 +238,7 @@ export const FormPayment = () => {
                             />
                         </label>
 
+                        {/* NUMERO DE LA CUENTA BANCARIA */}
                         <label className='flex flex-col gap-1'>
                             <InputCheckout
                                 label='Cuenta Bancaria'

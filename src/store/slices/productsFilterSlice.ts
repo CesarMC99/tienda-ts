@@ -4,9 +4,9 @@ import { Category, Product } from '../../types'
 
 export type ProductsFilterType = {
     productsFilterByCategory: Product[]
+    isLoadingProductsFilter: boolean
     selectedCategories: string[]
     currentFilteredPage: number
-    fetchProductsByCategorie: (categorie: Category['slug']) => Promise<void>
     fetchProductsBySelectedCategories: () => Promise<void>
     toggleCategory: (categorySlug: Category['slug'], isChecked: boolean) => void
     nextFilteredPage: () => void
@@ -18,18 +18,15 @@ export const createProductsFilterSlice: StateCreator<ProductsFilterType> = (
     get
 ) => ({
     productsFilterByCategory: [],
+    isLoadingProductsFilter: false,
     selectedCategories: [],
     currentFilteredPage: 1,
-    fetchProductsByCategorie: async (categorie: Category['slug']) => {
-        const productsFilterByCategory = await getProductsByCategorie(categorie)
-        set({
-            productsFilterByCategory,
-        })
-    },
     fetchProductsBySelectedCategories: async () => {
+        set({ isLoadingProductsFilter: true })
         const { selectedCategories } = get()
         let allProducts: Product[] = []
 
+        //HACEMOS FETCH DE LOS PRODUCTOS DE CADA CATEGORIA GUARDADA EN SELECTEDCATEGORIES
         for (const category of selectedCategories) {
             const products = await getProductsByCategorie(category)
             if (products) {
@@ -37,16 +34,25 @@ export const createProductsFilterSlice: StateCreator<ProductsFilterType> = (
             }
         }
 
-        set({ productsFilterByCategory: allProducts, currentFilteredPage: 1 })
+        set({
+            productsFilterByCategory: allProducts,
+            currentFilteredPage: 1,
+            isLoadingProductsFilter: false,
+        })
     },
     toggleCategory: (categorySlug: Category['slug'], isChecked: boolean) => {
         set((state) => ({
             selectedCategories: isChecked
-                ? [...state.selectedCategories, categorySlug]
-                : state.selectedCategories.filter(
+                ? // SI ES TRUE ISCHECKED
+                  // HACEMOS UN SPREAD Y AÑADIMOS LA CATEGORIA
+                  [...state.selectedCategories, categorySlug]
+                : // SI ES FALSE ISCHECKED
+                  // A TRAVEZ DEL FILTER QUITAMOS LA CATEGORIA
+                  state.selectedCategories.filter(
                       (category) => category !== categorySlug
                   ),
         }))
+        //HACEMOS UN FETCH DE TODAS LAS CATEGORIAS DE SELECTEDCATEGORIES
         get().fetchProductsBySelectedCategories()
     },
     nextFilteredPage: () => {

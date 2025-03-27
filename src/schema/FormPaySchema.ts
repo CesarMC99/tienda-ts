@@ -42,13 +42,14 @@ export const checkoutSchema = z
         bank: bankSchema,
     })
     .refine(
+        //VALIDAMOS QUE LOS DATOS NO ESTEN VACIOS Y DEVOLVEMOS UN BOOLEAN
         (data) => {
             if (data.paymentMethod === 'card') {
                 return (
                     !!data.card?.name &&
                     !!data.card?.number &&
                     !!data.card?.expiration &&
-                    !!data.card?.cvc //false
+                    !!data.card?.cvc
                 )
             }
 
@@ -61,5 +62,3 @@ export const checkoutSchema = z
             path: ['paymentMethod'],
         }
     )
-
-export type CheckoutFormValues = z.infer<typeof checkoutSchema>

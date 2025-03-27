@@ -1,3 +1,4 @@
+import { Spiner } from '../../../components/Spiner'
 import { useAppStore } from '../../../store'
 import { CardProduct } from './CardProduct'
 import { useState } from 'react'
@@ -9,6 +10,8 @@ export const ListOfProducts = () => {
         selectedCategories,
         currentPage,
         currentFilteredPage,
+        isLoadingProducts,
+        isLoadingProductsFilter,
         nextPage,
         beforePage,
         nextFilteredPage,
@@ -19,27 +22,31 @@ export const ListOfProducts = () => {
         'default'
     )
 
-    // Verificar si se están aplicando filtros
+    // VERIFICAR SI SE ESTA APLICANDO FILTROS
     const isFiltering = selectedCategories.length > 0
 
-    // Ordenar todos los productos antes de la paginación
+    // ORDENAR TODOS LOS PRODUCTOS ANTES DE LA PAGINACION
     const sortedProducts = [
         ...(isFiltering ? productsFilterByCategory : products),
     ].sort((a, b) => {
         if (sortOrder === 'asc') return a.price - b.price
         if (sortOrder === 'desc') return b.price - a.price
-        return 0 // default mantiene el orden original
+        return 0 //MANTIENE EL ORDEN ORIGINAL
     })
 
-    // Aplicar paginación sobre los productos ya ordenados
+    // APLICAR PAGINACION SOBRE LOS PRODUCTOS SELECCIONADOS
     const displayedProducts = sortedProducts.slice(
         (isFiltering ? currentFilteredPage - 1 : currentPage - 1) * 12,
         (isFiltering ? currentFilteredPage : currentPage) * 12
     )
 
+    if (isLoadingProducts || isLoadingProductsFilter) {
+        return <Spiner />
+    }
+
     return (
-        <section>
-            {/* Selector de ordenamiento */}
+        <section className='w-[75%]'>
+            {/* SELECTOR DE ORDENAMIENTO */}
             <div className='mb-4 flex justify-end'>
                 <div className='flex justify-center items-center'>
                     <label className='mr-2 font-medium text-gray-700'>
@@ -61,7 +68,7 @@ export const ListOfProducts = () => {
                 </div>
             </div>
 
-            {/* Lista de productos */}
+            {/* LISTA DE PRODUCTOS */}
             <div
                 className='grid grid-cols-1 gap-8 place-items-center
                            md:grid-cols-2
@@ -75,7 +82,7 @@ export const ListOfProducts = () => {
                 ))}
             </div>
 
-            {/* Paginación */}
+            {/* PAGINACION */}
             <div className='mt-6 flex justify-center items-center gap-4'>
                 <button
                     onClick={isFiltering ? beforeFilteredPage : beforePage}

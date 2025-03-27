@@ -15,12 +15,13 @@ export const ItemCart = ({ product }: ItemCartProps) => {
 
     return (
         <>
+            {/* ITEM DE CARRITO DE PRODUCTOS */}
             <article className='grid grid-cols-5 place-items-center'>
                 {/* IMAGEN DEL PRODUCTO */}
                 <img
                     src={product.thumbnail}
                     alt={product.title}
-                    className='bg-[#e5e1dc] w-[150px]'
+                    className='bg-[#e5e1dc] w-[150px] aspect-square'
                 />
                 {/* TITULO DEL ARTICULO */}
                 <h3 className='text-zinc-700 text-xl font-bold'>

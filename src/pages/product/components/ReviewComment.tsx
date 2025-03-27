@@ -18,10 +18,12 @@ export const ReviewComment = ({ review }: ReviewCommentProps) => {
         <article className='flex flex-col gap-2 p-3 border-1 border-gray-300 rounded-md '>
             <h5 className='text-lg font-semibold'>{review.reviewerName}</h5>
             <div className='flex items-center gap-2'>
+                {/* PUNTUACION EN MODO DE ESTRELLAS */}
                 <StarRating
                     rating={review.rating}
                     size={2}
                 />
+                {/* FECHA DEL COMENTARIO */}
                 <p className='text-sm text-gray-400'>
                     {timeAgoFormatting(review.date)}
                 </p>
@@ -32,7 +34,9 @@ export const ReviewComment = ({ review }: ReviewCommentProps) => {
                     ? 'Gracias por tus comentarios'
                     : '¿Te ha resultado útil esta reseña?'}
             </p>
+            {/* BOTONES DE LIKE Y DISLIKE */}
             <div className='flex gap-3'>
+                {/* LIKE */}
                 <div
                     className={` p-2 border-1  rounded-sm ${
                         isLiked.like
@@ -50,6 +54,7 @@ export const ReviewComment = ({ review }: ReviewCommentProps) => {
                     <AiOutlineLike />
                 </div>
 
+                {/* DISLIKE */}
                 <div
                     className={` p-2 border-1  rounded-sm ${
                         isLiked.dislike

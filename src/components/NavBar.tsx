@@ -12,11 +12,13 @@ const links = [
 ]
 
 export const NavBar = () => {
-    const { cartOfProducts } = useAppStore()
+    //RECUPERO PRODUCTOS DE CARTSLICE
+    const { cartOfProducts, clearProduct } = useAppStore()
 
     return (
         <section className='fixed w-full bg-white px-8 py-3 shadow-xl z-10'>
             <nav className='flex items-center justify-between'>
+                {/* LINKS DE LA PAGINA */}
                 <ul className='flex items-center gap-8'>
                     <li className='border-4 rounded-[50%]'>
                         <img
@@ -27,11 +29,17 @@ export const NavBar = () => {
                     </li>
                     {links.map((link) => (
                         <li key={link.id}>
-                            <NavLink to={link.link}>{link.name}</NavLink>
+                            <NavLink
+                                to={link.link}
+                                onClick={clearProduct}
+                            >
+                                {link.name}
+                            </NavLink>
                         </li>
                     ))}
                 </ul>
 
+                {/* LINK AL CARRITO DE PRODUCTOS */}
                 <NavLink
                     className='flex items-center gap-2'
                     to='/carrito'
